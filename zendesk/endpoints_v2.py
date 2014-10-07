@@ -49,6 +49,12 @@ mapping_table = {
         'method': 'GET',
     },
 
+    # Ticket Comments
+    'list_ticket_comments': {
+        'path': '/tickets/{{ticket_id}}/comments.json',
+        'method': 'GET',
+    },
+
     # Ticket Audits
     'list_audits': {
         'path': '/tickets/{{ticket_id}}/audits.json',
