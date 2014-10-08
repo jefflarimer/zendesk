@@ -61,6 +61,13 @@ class AuthenticationError(ZendeskError):
     def __str__(self):
         return repr(self.msg)
 
+class TooManyRequestsError(ZendeskError):
+    def __init__(self, msg, retry):
+        self.msg = msg
+        self.retry = retry
+
+    def __str__(self):
+        return repr("{0}; retry after {1} seconds".format(self.msg, self.retry))
 
 re_identifier = re.compile(r".*/(?P<identifier>\d+)\.(json|xml)")
 
@@ -230,6 +237,16 @@ class Zendesk(object):
         if not response:
             raise ZendeskError('Response Not Found')
         response_status = int(response.get('status', 0))
+
+        # If we've exceeded the rate limit, raise an exception that
+        # contains the number of seconds to wait until a retry
+        # should be attempted (defaulting to 60s if not in response)
+        if response_status == 429:
+            raise TooManyRequestsError(
+                "Too Many Requests", 
+                int(response.get('Retry-After', 60)
+            )
+        
         if response_status != status:
             raise ZendeskError(content, response_status)
 
