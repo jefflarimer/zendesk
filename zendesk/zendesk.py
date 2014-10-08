@@ -244,7 +244,7 @@ class Zendesk(object):
         if response_status == 429:
             raise TooManyRequestsError(
                 "Too Many Requests", 
-                int(response.get('Retry-After', 60)
+                int(response.get('Retry-After', 60))
             )
         
         if response_status != status:
